@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>@AtticusScot — Collected Posts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0c0c0e;
+    --bg2: #141416;
+    --bg3: #1c1c1f;
+    --card: #161618;
+    --gold: #c8a96e;
+    --gold2: #a8894e;
+    --cream: #f0ebe0;
+    --cream2: #bbb4a4;
+    --muted: #6b6460;
+    --border: rgba(200,169,110,0.15);
+    --border2: rgba(200,169,110,0.28);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 200px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 1px; height: 80px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(4rem, 14vw, 11rem);
+    line-height: 0.88;
+    letter-spacing: -0.02em;
+    color: var(--cream);
+    opacity: 0;
+    animation: fadeUp 1s 0.4s forwards;
+    margin-bottom: 0.15em;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 300;
+    color: var(--cream2);
+    letter-spacing: 0.04em;
+    margin-top: 2rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.6s forwards;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 4rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.9s forwards;
+  }
+
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.3rem;
+  }
+
+  .hero-rule {
+    width: 60px; height: 1px;
+    background: var(--gold);
+    margin: 0 1.5rem;
+    align-self: center;
+    opacity: 0;
+    animation: fadeUp 1s 0.9s forwards;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0;
+    animation: fadeUp 1s 1.4s forwards;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(12,12,14,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    max-width: 1100px;
+    margin: 0 auto;
+    min-width: max-content;
+  }
+
+  .nav-brand {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    padding: 1rem 0;
+    margin-right: 2rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  nav a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 1.1rem 1rem;
+    white-space: nowrap;
+    transition: color 0.2s;
+    border-bottom: 2px solid transparent;
+    flex-shrink: 0;
+  }
+  nav a:hover { color: var(--cream); }
+  nav a.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* ── CHAPTERS ── */
+  .chapter {
+    padding: 6rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .chapter:last-child { border-bottom: none; }
+
+  .chapter-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--gold2);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .chapter-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--cream);
+    margin-bottom: 1rem;
+  }
+
+  .chapter-intro {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-style: italic;
+    color: var(--cream2);
+    border-left: 2px solid var(--gold);
+    padding-left: 1.2rem;
+    margin-bottom: 3.5rem;
+    line-height: 1.6;
+  }
+
+  /* ── TWEET CARDS ── */
+  .tweets { display: flex; flex-direction: column; gap: 1px; }
+
+  .tweet-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold2);
+    padding: 1.8rem 2rem;
+    transition: border-color 0.2s, background 0.2s;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s, transform 0.5s, border-color 0.2s, background 0.2s;
+  }
+
+  .tweet-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .tweet-card:hover {
+    background: var(--bg3);
+    border-color: var(--border2);
+    border-left-color: var(--gold);
+  }
+
+  .tweet-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1.65;
+    color: var(--cream);
+    margin-bottom: 1.2rem;
+  }
+
+  .tweet-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .heart {
+    color: var(--gold);
+    font-size: 0.85rem;
+  }
+
+  .likes {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--gold);
+    font-weight: 400;
+  }
+
+  .likes-word {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    border-top: 1px solid var(--border);
+    margin-top: 4rem;
+  }
+
+  .footer-rule {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 2rem;
+    letter-spacing: 0.3em;
+  }
+
+  .footer-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--cream2);
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-handle {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--gold);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--gold2);
+    padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .footer-handle:hover { color: var(--cream); border-color: var(--cream); }
+
+  .footer-note {
+    margin-top: 3rem;
+    font-size: 0.7rem;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .hero-stats { gap: 1.5rem; }
+    .hero-rule { margin: 0 0.8rem; }
+    .tweet-text { font-size: 1.1rem; }
+    .tweet-card { padding: 1.4rem 1.2rem; }
+    .chapter { padding: 4rem 0 1rem; }
+  }
+
+  /* ── TOP BADGE for viral tweets ── */
+  .viral-badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--gold2);
+    padding: 0.15rem 0.5rem;
+    margin-bottom: 0.8rem;
+    border-radius: 2px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<section class="hero" aria-label="Site header">
+  <p class="hero-eyebrow">x.com / AtticusScot</p>
+  <h1 class="hero-title">Collected<br><em>Posts</em></h1>
+  <p class="hero-sub">The best tweets, organized by theme &amp; sorted by likes</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">957</div>
+      <div class="stat-label">Total Posts</div>
+    </div>
+    <div class="hero-rule"></div>
+    <div class="stat">
+      <div class="stat-num">9.9K</div>
+      <div class="stat-label">Top Likes</div>
+    </div>
+    <div class="hero-rule"></div>
+    <div class="stat">
+      <div class="stat-num">8</div>
+      <div class="stat-label">Chapters</div>
+    </div>
+  </div>
+  <p class="scroll-hint">↓ Scroll to read</p>
+</section>
+
+<!-- ── NAV ── -->
+<nav aria-label="Chapter navigation">
+  <div class="nav-inner">
+    <span class="nav-brand">@AtticusScot</span>
+    <a href="#mindset">Mindset</a>
+    <a href="#philosophy">Philosophy</a>
+    <a href="#society">Society</a>
+    <a href="#tech">Tech & AI</a>
+    <a href="#politics">Politics</a>
+    <a href="#love">Love & Loss</a>
+    <a href="#college">College Life</a>
+    <a href="#humor">Humor</a>
+  </div>
+</nav>
+
+<!-- ── CONTENT ── -->
+<main>
+
+<section class="chapter" id="mindset" aria-label="Chapter 1">
+  <p class="chapter-number">Chapter 01</p>
+  <h2 class="chapter-title">Mindset &amp;<br>Personal Growth</h2>
+  <p class="chapter-intro">Observations on ambition, discipline, and the relentless pursuit of becoming.</p>
+  <div class="tweets" id="tweets-mindset"></div>
+</section>
+
+<section class="chapter" id="philosophy" aria-label="Chapter 2">
+  <p class="chapter-number">Chapter 02</p>
+  <h2 class="chapter-title">Philosophy &amp;<br>Deep Thoughts</h2>
+  <p class="chapter-intro">Questions worth losing sleep over — and some that will make sure you do.</p>
+  <div class="tweets" id="tweets-philosophy"></div>
+</section>
+
+<section class="chapter" id="society" aria-label="Chapter 3">
+  <p class="chapter-number">Chapter 03</p>
+  <h2 class="chapter-title">Society &amp;<br>Human Nature</h2>
+  <p class="chapter-intro">Patterns in people — the ones we recognize but rarely say out loud.</p>
+  <div class="tweets" id="tweets-society"></div>
+</section>
+
+<section class="chapter" id="tech" aria-label="Chapter 4">
+  <p class="chapter-number">Chapter 04</p>
+  <h2 class="chapter-title">Tech, AI &amp;<br>Social Media</h2>
+  <p class="chapter-intro">Living through the strangest technological moment in human history — from the inside.</p>
+  <div class="tweets" id="tweets-tech"></div>
+</section>
+
+<section class="chapter" id="politics" aria-label="Chapter 5">
+  <p class="chapter-number">Chapter 05</p>
+  <h2 class="chapter-title">Politics &amp;<br>Power</h2>
+  <p class="chapter-intro">The theater of governance — equal parts riveting and absurd.</p>
+  <div class="tweets" id="tweets-politics"></div>
+</section>
+
+<section class="chapter" id="love" aria-label="Chapter 6">
+  <p class="chapter-number">Chapter 06</p>
+  <h2 class="chapter-title">Love, Loss &amp;<br>Connection</h2>
+  <p class="chapter-intro">The moments that remind you that being human is a full-contact sport.</p>
+  <div class="tweets" id="tweets-love"></div>
+</section>
+
+<section class="chapter" id="college" aria-label="Chapter 7">
+  <p class="chapter-number">Chapter 07</p>
+  <h2 class="chapter-title">College Life &amp;<br>Coming of Age</h2>
+  <p class="chapter-intro">Dispatches from the trenches of early adulthood, one RedBull at a time.</p>
+  <div class="tweets" id="tweets-college"></div>
+</section>
+
+<section class="chapter" id="humor" aria-label="Chapter 8">
+  <p class="chapter-number">Chapter 08</p>
+  <h2 class="chapter-title">Humor &amp;<br>Sharp Observations</h2>
+  <p class="chapter-intro">The tweets that make you exhale through your nose — then think too hard.</p>
+  <div class="tweets" id="tweets-humor"></div>
+</section>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-rule">✦</div>
+  <p class="footer-title">Read more at</p>
+  <a class="footer-handle" href="https://x.com/AtticusScot" target="_blank" rel="noopener">x.com/AtticusScot</a>
+  <p class="footer-note">Compiled 2026 · 957 posts · 8 chapters</p>
+</footer>
+
+<script>
+const DATA = {
+  mindset: [
+    { text: "don't empower the wrong audience... this isn't for everyone", likes: 9900 },
+    { text: "the mind absorbs knowledge rapidly in the hours past 12, you're missing out", likes: 655 },
+    { text: "presence is an underrated character trait", likes: 12 },
+    { text: "you can't find clarity or purpose if you're always being bombarded with noise", likes: 5 },
+    { text: "The only way to provide real value on this app — get off the app, learn new stuff and experience new things, share about it on the app. Mostly everything else is brainless slop. You can't create meaningful output until you receive meaningful input.", likes: 5 },
+    { text: "I hate hanging out with pessimists. Especially the performative pessimists. The ones that love making the gloom and doom their personality quirk. Being happy is much cooler. Excitement is magnetic. Always imagine the best case scenario. Smile for no reason. Be optimistic.", likes: 5 },
+    { text: "meeting the right friend in your younger years could change the trajectory of your life", likes: 4 },
+    { text: "Something that will make you an absurdly interesting person is just having skills no one knows about. Things that you don't tell people when they meet you, but they eventually find out after knowing you for long enough.", likes: 4 },
+    { text: "setting apart time to do nothing but think and write is underrated. You get more insight sitting and being with yourself for 30 minutes than having a 3 hr podcast as background noise, passively listening while you run errands.", likes: 3 },
+    { text: "you regret not learning that skill you wanted to learn 5 years ago. But imagine the regret you'll be feeling 5 years from now if you don't start now. Make the decision to set your future self up for fulfillment, even if you don't feel the satisfaction right now.", likes: 2 },
+    { text: "fulfillment often comes when we give everything we knew we were capable of", likes: 3 },
+    { text: "Burnout occurs when you are not winning", likes: 3 },
+    { text: "It takes a lot to outweigh a first impression", likes: 6 },
+    { text: "don't let the judgements of other people dictate your actions. It's your life, not theirs. At the end of the day, you'll wish you did what you wanted to do instead of letting the perceptions of others keep you in a chokehold.", likes: 2 },
+    { text: "the art of subtlety has been drowned out by the shouting of people who get what they want by being the loudest and brashest", likes: 2 },
+    { text: "saying you're going to do something and never doing it is much more harmful to your image than never saying anything at all. Until you do what you said you would, you're a fake, and no one believes what you say.", likes: 1 },
+    { text: "Do not scale down the objective to fit current conditions", likes: 1 },
+    { text: "I don't want to look back at my younger self and say 'damn I failed him'", likes: 1 },
+  ],
+  philosophy: [
+    { text: "I wonder how many near death experiences the average person has before they actually die", likes: 7400 },
+    { text: "you used up all your luck in life", likes: 303 },
+    { text: "I have a strong belief that this is the best time in the history of humankind to be alive", likes: 3 },
+    { text: "pictures and videos are nice. but a taste, scent, or sound can virtually transport you into the past. There's a certain flavor of RedBull that brings back vivid memories of a certain time in high school. I don't drink that flavor anymore because I don't want to corrupt the memory.", likes: 3 },
+    { text: "I'm all cozy in bed and drifting off to sleep when suddenly I remember that this is literally the only life I have and now I can't sleep", likes: 2 },
+    { text: "There's a level of pessimism that can only be reached in the dead of night, a level which would be impossible to come to while sitting in broad daylight", likes: 2 },
+    { text: "Life is like taking a long, hot shower. Eventually the hot water runs out and it's just warm, almost cold. You're still showering, but it's dull compared to how it used to be. Maybe that's why it's good that we all die — so we don't end up in an infinite lukewarm shower.", likes: 1 },
+    { text: "I'm terrified of dying, but not in the accidental sense. I'm not scared of getting in a car crash tomorrow. What freaks me out is the fact that we are all biologically programmed to expire and there's absolutely nothing we can do about it.", likes: 1 },
+    { text: "everyone wants something to believe in", likes: 1 },
+    { text: "Imagine being a character in someone's dream and then suddenly your existence is cut short because of an alarm from the outside world", likes: 1 },
+    { text: "when somebody wants something to be true, no amount of logic will convince them otherwise. The mind will overlook all reason when it desperately wishes for something.", likes: 1 },
+    { text: "the most breathtaking part about being in a big city is walking around, looking at everything, and realizing it's all there because someone thought it should be there. Someone saw an open area and imagined a skyscraper... then actually forced a skyscraper into existence.", likes: 1 },
+  ],
+  society: [
+    { text: "you thought you had a special taste but turns out everyone else had the same taste", likes: 134 },
+    { text: "the masses require an authority figure to direct what they believe. The kids saw you as an equal and therefore not credible.", likes: 44 },
+    { text: "if everyone stopped drinking only the people who are naturally outgoing and fun-loving (the non-drinkers) would go out every weekend", likes: 25 },
+    { text: "A lot of people forget that these civilizations existed before the Europeans arrived. And they weren't perfect civilizations — the Europeans didn't bring them all of their problems.", likes: 62 },
+    { text: "most social interactions are boring and stale because every participant is trying to act as normal and acceptable as possible. Then somebody comes along and throws the script out the window, breaks all the arbitrary rules, and simply doesn't care. That person dominates the room.", likes: 2 },
+    { text: "My biggest flaw in conversations is assuming people know just as much as they pretend to know", likes: 3 },
+    { text: "The more people you meet, the more you realize that there's not that many different types of people in the world", likes: 1 },
+    { text: "in times of panic, change, or confusion, people just want someone to follow. Even if the leader is secretly clueless, it doesn't matter. There's a comforting feeling that emanates from a confident individual — and we often chase that feeling rather than make our own decisions.", likes: 1 },
+    { text: "people think they're going to flip their life around by just suddenly doing everything right. But unless you go through a profoundly life changing experience, sudden changes in all areas of life are short lived and often fail.", likes: 1 },
+    { text: "most people will believe what you're saying if you say it with conviction", likes: 1 },
+    { text: "we often put a disproportionate amount of value on the judgement of others. We should trust ourselves more and realize most people don't know what they're talking about.", likes: 1 },
+    { text: "Dysfunctional people love to find other dysfunctional people and start dysfunctional relationships", likes: 1 },
+    { text: "the most successful people didn't follow the conventional path, they paved their own road. Don't try to imitate those people, it's an insult to their approach. Be new, be different, be innovative. Do it your way.", likes: 1 },
+  ],
+  tech: [
+    { text: "chatgpt will probably just glaze you unnecessarily", likes: 73 },
+    { text: "there is essentially one big company — the elon company, and all the individual companies assist each other in achieving Elon's ultimate purpose", likes: 25 },
+    { text: "what makes you think that Google will let go of its dominance so easily? Google is already using AI for more convenient search results. Google seems to already have an edge in this race with its massive user base.", likes: 9 },
+    { text: "how often do you remember what you were laughing about the next day? Reels bring laughs but nothing long lasting.", likes: 5 },
+    { text: "I'm genuinely so happy we live in the timeline where several AI providers are in an intense competition instead of a government-backed regulatory monopoly scenario. Acceleration won over centralization.", likes: 3 },
+    { text: "Essentially AI replaces shallow accounts and influencers that don't provide much value — good. But the best influencers cannot be replaced by AI, because their platform is ingrained with their story, experiences, and thoughts which are all REAL.", likes: 3 },
+    { text: "the cancelling of the Colbert show is yet another indicator that the media landscape is changing. TV is a thing of the past. Podcasts have officially won the battle over people's time and attention.", likes: 1 },
+    { text: "In 5 years there is going to be a massive industry geared towards AI detection, especially if companies like Cluely gain traction.", likes: 1 },
+    { text: "me and my friends were having a convo about AI. I said that in 20 years I would trust a robot more than a human to do surgery on me. They called me crazy, which baffled me. This will probably be a common perception in 20 years.", likes: 1 },
+    { text: "X will be really useful to historians in 50 years... so nobody delete your posts", likes: 1 },
+    { text: "instagram ads are scarily effective. If you let the algo know ANYTHING about you, it will find you and force you to buy the stuff you didn't know you wanted.", likes: 1 },
+  ],
+  politics: [
+    { text: "The business and politics world is remarkably more entertaining and suspenseful than any sport. The players have more depth. The rules are always changing. A new team is introduced nearly every year. The rivalries are fierce. And the coolest part: the results will shape the world.", likes: 3 },
+    { text: "the founding fathers were absurdly young for the activities they were engaged in. 250 years later we have elderly people tarnishing the country.", likes: 3 },
+    { text: "the 1940s form of propaganda is no longer effective because anyone can spout their thoughts online. Propaganda relies on the idea that the audience only receives one credible narrative. This was very easy in the 1940s.", likes: 3 },
+    { text: "the free market is the most effective setting for innovation. Competition forces the absolute best out of all countries, companies, and individuals.", likes: 3 },
+    { text: "People are scared of new ideas because the old ideas have been tried and proven. New ideas are risky, uncharted, perhaps even a bit unsafe. But if you package new ideas as old ideas, people will adapt them easily.", likes: 3 },
+    { text: "The overall determinant of world structure for the rest of the 21st century rests firmly on one question — do the American people want their country to remain the greatest, or have we lost our drive?", likes: 1 },
+    { text: "politics has been morphing into a big meme. The US wants to take over Greenland, the White House Twitter account is posting Studio Ghibli images of illegal immigrants, and our president consistently refers to Canada as the 51st state. I'm not sure what's happening anymore.", likes: 1 },
+  ],
+  love: [
+    { text: "It's truly crushing to love someone amazing even though you know they're taking a path that you can't follow. It hurts to know that their journey is going to continue without you, and you'll be forced to wave goodbye as they slip away.", likes: 5 },
+    { text: "I would like to thank my ex for making me associate all the usual fall activities with our relationship. Now I don't even know what I'm supposed to do this year.", likes: 4 },
+    { text: "La La Land has one of the best endings ever but I don't think I can mentally handle watching it again", likes: 3 },
+    { text: "the weather is getting cold... which means it's time to find someone to hold. Fall and Winter are way better with a partner.", likes: 3 },
+    { text: "I stopped seeing the same pretty girl on the train every morning and my life is a little worse now", likes: 2 },
+    { text: "Once you start telling friends your secrets you better make sure they stay your friends", likes: 2 },
+    { text: "giving my friends advice for their lives is much easier than implementing the advice into my own life", likes: 1 },
+    { text: "never doubt life's ability to throw something totally unexpected at you", likes: 1 },
+  ],
+  college: [
+    { text: "wake up + class. Breakfast: none. Lunch: RedBull. Dinner: ramen. Intense study. It's not complicated.", likes: 2 },
+    { text: "New dorm bro just told me he's majoring in finance after remarking that he hates math", likes: 3 },
+    { text: "more than a month into this online class and just found out I was supposed to be reading a textbook all along. Now I'm headed to the midterm exam.", likes: 2 },
+    { text: "I need a briefcase. Having a backpack is too juvenile.", likes: 2 },
+    { text: "Some people really do not understand the concept that I am busy. No, I cannot just drop everything and play pool for 2 hours. Not all of us are daddy's money business majors.", likes: 2 },
+    { text: "getting out of bed on time is the hardest action of the day, but it's always smooth sailing from there", likes: 2 },
+    { text: "I like to overschedule myself at a nearly unachievable level because I'm addicted to stress", likes: 2 },
+    { text: "I'm in the trenches but at least I'm not in a coffin", likes: 3 },
+    { text: "For a second I thought I was missing out on the thrills of college life. Then I went out with some friends and realized I wasn't missing out on a single thing.", likes: 2 },
+    { text: "It's crazy that some people actually expect to peak in college", likes: 1 },
+    { text: "go to bed late, wake up early. Work hard, play hard. Squeeze everything out of life.", likes: 1 },
+    { text: "there's levels to this world that you'll never witness if you never leave your hometown", likes: 1 },
+  ],
+  humor: [
+    { text: "somebody's gotta pay for the piñata", likes: 163 },
+    { text: "I was watching a blind guy cross the street and I realized that blind people must be extremely good at walking straight with their eyes closed", likes: 3 },
+    { text: "Sunday's are for listening to jazz, eating fruit, and reading about how the greats became great — preparations for a high energy week.", likes: 3 },
+    { text: "replace redbull with monster, only the doers drink redbull", likes: 15 },
+    { text: "The reason people haven't had their fourth child yet is because they decided they were done after two", likes: 2 },
+    { text: "It's important for a short guy to be a Tom Cruise and not a Lord Farquaad", likes: 2 },
+    { text: "I once had a teacher who would take a sip out of his water bottle after every sentence and that was the most distracting part of the class", likes: 2 },
+    { text: "Without my glasses on every girl looks like a baddie", likes: 2 },
+    { text: "my mom was too cool for Tylenol", likes: 2 },
+    { text: "Walk into the dorm every night and my roommate is always sitting on the couch like an unskippable cutscene", likes: 1 },
+    { text: "Curious George was undeniably the best kids show in the early 2000s", likes: 1 },
+    { text: "I've been hoeing around with too many different books. I need to stay loyal to one for at least a week.", likes: 1 },
+    { text: "everyone says their life is so much better with coffee but that's only because they try to get off it after being attached to it. What if they just never got attached to coffee in the first place? They would be undeniably happier.", likes: 2 },
+  ]
+};
+
+function fmtLikes(n) {
+  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+  return n.toLocaleString();
+}
+
+function renderTweets() {
+  Object.entries(DATA).forEach(([key, tweets]) => {
+    const container = document.getElementById('tweets-' + key);
+    if (!container) return;
+    tweets.forEach((t, i) => {
+      const card = document.createElement('article');
+      card.className = 'tweet-card';
+      card.style.transitionDelay = (i * 60) + 'ms';
+      const isViral = t.likes >= 100;
+      card.innerHTML = `
+        ${isViral ? `<div class="viral-badge">${fmtLikes(t.likes)} likes</div>` : ''}
+        <p class="tweet-text">${t.text}</p>
+        <div class="tweet-meta">
+          <span class="heart">♥</span>
+          <span class="likes">${fmtLikes(t.likes)}</span>
+          <span class="likes-word">likes</span>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  });
+}
+
+// Scroll-triggered reveal
+function setupObserver() {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.tweet-card').forEach(c => io.observe(c));
+}
+
+// Active nav on scroll
+function setupNav() {
+  const sections = document.querySelectorAll('.chapter');
+  const navLinks = document.querySelectorAll('nav a');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const link = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (link) {
+          link.classList.add('active');
+          link.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+        }
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(s => io.observe(s));
+}
+
+renderTweets();
+setupObserver();
+setupNav();
+</script>
+</body>
+</html>
